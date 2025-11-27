@@ -1,0 +1,99 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #456882;
+}
+
+#login-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#login-screen input {
+    border: none;
+    outline: none;
+    background-color: #E3E3E3;
+    color: #1B3C53;
+    font-size: 18px;
+    padding: 5px 20px;
+    border-radius: 5px;
+}
+
+#login-screen input::placeholder {
+    color: #294050;
+    font-size: 16px;
+}
+
+#login-screen button {
+    border: none;
+    background-color: #234C6A;
+    color: white;
+    font-size: 18px;
+    padding: 10px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#whiteboard-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+#roomDisplay {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #E3E3E3;
+}
+
+input[type="color"] {
+    height: 35px;
+    width: 35px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border-radius: 50%; 
+}
+
+input[type="range"] {
+    accent-color: #1B3C53;
+}
+
+canvas {
+    background-color: white;
+}
+
+#clearButton, #undoButton, #saveButton {
+    background-color: #234C6A;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
