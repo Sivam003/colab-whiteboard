@@ -13,7 +13,7 @@ io.on("connect", function (socket) {
 
   socket.on("clear", () => {
     const roomData = rooms.get(socket.roomId);
-    if(roomData) {
+    if (roomData) {
       roomData.history = [];
       io.to(socket.roomId).emit("clear");
     }
@@ -21,8 +21,8 @@ io.on("connect", function (socket) {
 
   socket.on("undo", () => {
     const roomData = rooms.get(socket.roomId);
-    if(roomData && roomData.history.length > 0) {
-      while(roomData.history.at(roomData.history.length-1).type !== "start") {
+    if (roomData && roomData.history.length > 0) {
+      while (roomData.history.at(roomData.history.length - 1).type !== "start") {
         roomData.history.pop();
       }
       roomData.history.pop();
@@ -34,8 +34,16 @@ io.on("connect", function (socket) {
 
   socket.on("draw", (data) => {
     const roomData = rooms.get(socket.roomId);
-    if(roomData) {
-      const historyItem = {type: "draw", x: data.x, y: data.y, color: data.color, stroke: data.stroke};
+    if (roomData) {
+      const historyItem = {
+        type: "draw",
+        startX: data.startX,
+        startY: data.startY,
+        endX: data.endX,
+        endY: data.endY,
+        color: data.color,
+        stroke: data.stroke,
+      };
       roomData.history.push(historyItem);
       socket.to(socket.roomId).emit("draw", data);
     }
@@ -43,8 +51,8 @@ io.on("connect", function (socket) {
 
   socket.on("mousedown", (data) => {
     const roomData = rooms.get(socket.roomId);
-    if(roomData) {
-      const historyItem = {type: "start", x: data.x, y: data.y, color: data.color, stroke: data.stroke};
+    if (roomData) {
+      const historyItem = { type: "start", x: data.x, y: data.y, color: data.color, stroke: data.stroke };
       roomData.history.push(historyItem);
       socket.to(socket.roomId).emit("mousedown", data);
     }
@@ -93,7 +101,7 @@ io.on("connect", function (socket) {
       const roomsData = rooms.get(socket.roomId);
       roomsData.participants -= 1;
 
-      if(roomsData.participants == 0) {
+      if (roomsData.participants == 0) {
         rooms.delete(socket.roomId);
       } else {
         rooms.set(socket.roomId, roomsData);

@@ -20,12 +20,17 @@ canvas.width = 0.9 * window.innerWidth;
 canvas.height = 0.85 * window.innerHeight;
 
 let x, y;
+let lastX, lastY;
 let drawing = false;
 
 socket.on("draw", (data) => {
-    ctx.lineTo(data.x, data.y);
+    ctx.beginPath();
+    ctx.moveTo(data.startX, data.startY);
+    ctx.lineTo(data.endX, data.endY);
     ctx.lineWidth = data.stroke;
     ctx.strokeStyle = data.color;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.stroke();
 });
 
@@ -34,6 +39,8 @@ socket.on("mousedown", (data) => {
     ctx.moveTo(data.x, data.y);
     ctx.strokeStyle = data.color;
     ctx.lineWidth = data.stroke;
+    ctx.lineCap = "round";
+    ctx.stoke();
 });
 
 socket.on("createRoom", (data) => {
@@ -55,10 +62,15 @@ socket.on("loadHistory", (history) => {
             ctx.moveTo(item.x, item.y);
             ctx.strokeStyle = item.color;
             ctx.lineWidth = item.stroke;
+            ctx.lineCap = "round";
+            ctx.stroke();
         } else if (item.type === "draw") {
-            ctx.lineWidth = item.stroke;
+            ctx.beginPath();
+            ctx.moveTo(item.startX, item.startY);
+            ctx.lineTo(item.endX, item.endY);
             ctx.strokeStyle = item.color;
-            ctx.lineTo(item.x, item.y);
+            ctx.lineWidth = item.stroke;
+            ctx.lineCap = "round";
             ctx.stroke();
         }
     });
@@ -78,10 +90,17 @@ socket.on("error", (msg) => {
 canvas.addEventListener("mousedown", function (event) {
     x = event.clientX - canvas.offsetLeft;
     y = event.clientY - canvas.offsetTop;
+
+    lastX = x;
+    lastY = y;
+
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.strokeStyle = colorPicker.value;
     ctx.lineWidth = strokeWidth.value;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
 
     socket.emit("mousedown", {
         x: x,
@@ -97,21 +116,29 @@ canvas.addEventListener("mouseup", function (event) {
 });
 
 canvas.addEventListener("mousemove", function (event) {
+    if (!drawing) return;
     x = event.clientX - canvas.offsetLeft;
     y = event.clientY - canvas.offsetTop;
 
-    if (drawing) {
-        ctx.lineTo(x, y);
-        ctx.lineWidth = strokeWidth.value;
-        ctx.strokeStyle = colorPicker.value;
-        ctx.stroke();
-        socket.emit("draw", {
-            x: x,
-            y: y,
-            color: colorPicker.value,
-            stroke: strokeWidth.value,
-        });
-    }
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = colorPicker.value;
+    ctx.lineWidth = strokeWidth.value;
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    socket.emit("draw", {
+        startX: lastX,
+        startY: lastY,
+        endX: x,
+        endY: y,
+        color: colorPicker.value,
+        stroke: strokeWidth.value,
+    });
+
+    lastX = x;
+    lastY = y;
 });
 
 clearButton.addEventListener("click", function () {
